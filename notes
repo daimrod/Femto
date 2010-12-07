@@ -1,0 +1,52 @@
+struct func {
+       action instr[] = {add, b, cmp, ...};
+       nb_instr;
+}
+
+action(reg[], ra, &ip, &flags)
+
+reg[]	-> tableau contenant les registres
+ip	-> ligne courante
+flags	-> le resultat du dernier test
+ra[]	-> tableau contenant les registres a utiliser (rd, rs, rt)
+suf	-> suffixe
+
+
+1)	lire instruction
+2)	decoder instruction
+3)	toExec(suffixe, flags) ? goto 4) : goto 1)
+4)	instr[opcode](reg, &ip, &flags)
+5)	inc ip
+6)	goto 1)
+
+while (has_instruction(ip)) {
+      instr = lire_instruction(ip)
+      decoder(instr, opcode, suf, ra)
+      if (toExec(suf, flags))
+      	 instr[opcode](reg, ra, &ip, &flags)
+      ip++
+}
+
+
+__INSTR_H__
+
+add
+b
+cmp
+load
+move
+mul
+pow
+print
+read
+stop
+sub
+
+
+_______SUFFIXE______
+flags uint
+-1	-> inferieur strict
+0	-> egalite
+1	-> superieur strict
+
+return suf == AL || (flags == -1 && (suf == LE || suf == LT)) || (flags == 0 && (suf == EQ || suf == LE)) || (suf == NE && flags != 0)
