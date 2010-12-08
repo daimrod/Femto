@@ -4,7 +4,7 @@ static void mod_ip(instr_s *instr_sa, int32_t offset) {
   int32_t new_ip;
 
   new_ip = instr_sa->ip + offset;
-  if (new_ip >= 0 && new_ip < instr_sa->nb)
+  if (new_ip >= 0 && new_ip <= instr_sa->nb)
     instr_sa->ip = new_ip;
   else {
     fputs("erreur: pointeur instruction hors de portee\n", stderr);

@@ -73,44 +73,57 @@ instr_s*	read_file(char *name) {
   uint32_t i, size;
   uint64_t *mem;
 
+  /*  reservation de la memoire pour stocker toutes les instructions  */
   size = 10;
   if ((mem = (uint64_t*) malloc(sizeof(mem) * size)) == NULL) {
     fputs("erreur: impossible d'allouer la memoire pour la lecture\n", stderr);
     exit(-1);
   }
 
+  /*  ouverture le fichier specifie en lecture seule  */
   if ((fd = fopen(name, "r")) == NULL) {
     fprintf(stderr, "erreur: impossible d'ouvrir le fichier %s\n", name);
     exit(-1);
   }
   
+  /*  lecture fichier ligne par ligne et stocke chaque instruction dans mem  */
   i = 0;
   while (fgets(line, 255, fd) != NULL) {
     mem[i] = str_to_uint64(line);
     i++;
     if (i >= size) {
       size *= 2;
+      /*  si on n'a pas assez de place on double la taille  */
       if ((mem = (uint64_t*) realloc(mem, sizeof(mem) * size)) == NULL) {
 	fputs("erreur: impossible d'allouer la memoire pour la lecture\n", stderr);
 	exit(-1);
       }
     }
   }
+  /*  fermeture du fichier  */
   fclose(fd);
   fd = NULL;
 
+  /*  reservation de la memoire pour la structure a retourner  */
   if ((ret = (instr_s*) malloc(sizeof(ret))) == NULL) {
 	fputs("erreur: impossible d'allouer la memoire\n", stderr);
 	exit(-1);
   }
-  ret->ip = 0;
 
-  
+  /*  
+   *  allocation pile poil la bonne taille pour le tableau d'instruction de la structure plus
+   *  une instruction vide a la fin
+   */
+  mem[i] = 0;
   if((ret->ins = (uint64_t*) malloc(sizeof(ret->ins) * i)) == NULL) {
 	fputs("erreur: impossible d'allouer la memoire\n", stderr);
 	exit(-1);
   }
+
+  /*  remplissage de la structure  */
   ret->ins = (uint64_t*) memcpy(ret->ins, mem, sizeof(uint64_t) * i);
+  ret->ip = 0;
+  ret->nb = i+1;
   free(mem);
   mem = NULL;
 
