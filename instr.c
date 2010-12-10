@@ -53,7 +53,7 @@ void	f_cmp	(float *reg, uint8_t *ra, instr_s *instr_sa, uint8_t *flags) {
   else if (reg[ra[0]] < reg[ra[1]])
     *flags = *flags | 0x02;
   else
-    *flags = *flags & 0xFD;
+    *flags = *flags | 0x04;
   INC_IP(instr_sa);
 }
 

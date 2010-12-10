@@ -31,9 +31,9 @@ void	f_stop	(float *reg, uint8_t *ra, instr_s *instr, uint8_t *flags);
 void	f_sub	(float *reg, uint8_t *ra, instr_s *instr, uint8_t *flags);
 
 #define AL 0
-#define LT 1
-#define LE 2
-#define EQ 3
+#define EQ 1
+#define LT 2
+#define LE 3
 #define NE 4
 
 #endif
