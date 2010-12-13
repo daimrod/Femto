@@ -27,4 +27,4 @@ pack: main.c instr.c test.c instr.h notes makefile
 	gzip -c femto.tar > femto.tar.gz
 
 doc: main.c instr.c instr.h test.c
-	doxygen main.c
+	doxygen doxyfile

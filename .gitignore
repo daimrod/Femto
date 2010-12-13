@@ -1,6 +1,6 @@
 *.o
 main
-html/*
-latex/*
+doc/*
+doxyfile
 *~
 *.swp
