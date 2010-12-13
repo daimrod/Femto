@@ -150,12 +150,22 @@ uint64_t str_to_uint64(char *str) {
 
 void emula(instr_s *instr) {
   fp_instr *fp_instr_a;
+  uint64_t ins_cur;
   uint8_t op, suf, ra[3], flags;
   float reg[16];
 
   fp_instr_a = f_init();
+  flags = 0;
   
   while (instr->ip < instr->nb) {
-    
+    /*  Recuperation de l'instruction courante  */
+    ins_cur = instr->ins[instr->ip];
+
+    /*  Decomposition de l'instruction  */
+    split(ins_cur, &op, &suf, ra);
+
+    /*  On execute l'instruction demandee si necessaire  */
+    if ((suf & flags) | !suf)
+      fp_instr_a[op](reg, ra, instr, &flags);
   }
 }
