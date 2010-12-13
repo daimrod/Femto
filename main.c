@@ -153,9 +153,13 @@ void emula(instr_s *instr) {
   uint64_t ins_cur;
   uint8_t op, suf, ra[3], flags;
   float reg[16];
+  size_t i;
 
   fp_instr_a = f_init();
   flags = 0;
+  for (i = 0; i < 16; ++i)
+    reg[i] = i;
+
   
   while (instr->ip < instr->nb) {
     /*  Recuperation de l'instruction courante  */
