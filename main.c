@@ -1,10 +1,10 @@
 /**
  * \file main.c
- * \brief Programme principale pour l'émulateur femto
+ * \brief Programme principale pour l'Ã©mulateur femto
  * \author Grau.N Jadi.G
- * \date 6 Décembre 2010
+ * \date 6 DÃ©cembre 2010
  *
- * Programme réalisant l'émulation d'un processeur femto en lisant le fichier indiqué
+ * Programme rÃ©alisant l'Ã©mulation d'un processeur femto en lisant le fichier indiquÃ©
  */
 
 #include <stdio.h>
@@ -20,10 +20,10 @@ void emula(instr_s *instr);
 
 /**
  * \fn int main(int argc, char *argv[])
- * \brief point d'entrée du programme
+ * \brief point d'entrÃ©e du programme
  *
- * \param argc nombre de paramètres envoyés au programme
- * \param argv paramètres envoyés au programme
+ * \param argc nombre de paramÃ¨tres envoyÃ©s au programme
+ * \param argv paramÃ¨tres envoyÃ©s au programme
  * \return un code d'erreur
  */
 int main(int argc, char *argv[]) {
@@ -39,14 +39,14 @@ int main(int argc, char *argv[]) {
 
 /**
  * \fn void	split(uint64_t instr, uint8_t *op, uint8_t *suf, uint8_t *ra)
- * \brief Décompose l'instruction donnée en sous-instructions interprétables
+ * \brief DÃ©compose l'instruction donnÃ©e en sous-instructions interprÃ©tables
  *
- * \param instr l'instruction à décomposer
- * \param op l'opération à effectuer
- * \param suf le suffixe lié à l'opération
- * \param ra un tableau indiquant les registres à utiliser durant l'opération
+ * \param instr l'instruction Ã  dÃ©composer
+ * \param op l'opÃ©ration Ã  effectuer
+ * \param suf le suffixe liÃ© Ã  l'opÃ©ration
+ * \param ra un tableau indiquant les registres Ã  utiliser durant l'opÃ©ration
  *
- * Décompose la partie de l'instruction pour en permettre l'interprétation
+ * DÃ©compose la partie de l'instruction pour en permettre l'interprÃ©tation
  */
 void	split(uint64_t instr, uint8_t *op, uint8_t *suf, uint8_t *ra) {
   *op	= (instr & 0xFF000000) >> 24;
@@ -58,13 +58,13 @@ void	split(uint64_t instr, uint8_t *op, uint8_t *suf, uint8_t *ra) {
 
 /**
  * \fn instr_s*	read_file(char *name)
- * \brief Lit le fichier spécifié et initialise le contexte de l'émulateur
+ * \brief Lit le fichier spÃ©cifiÃ© et initialise le contexte de l'Ã©mulateur
  *
- * \param name le nom fichier à lire
- * \return le contexte de l'émulateur
+ * \param name le nom fichier Ã  lire
+ * \return le contexte de l'Ã©mulateur
  *
  * Lit le fichier ligne par ligne en convertissant chaque ligne en une instruction
- * qui pourra être interprétée.
+ * qui pourra Ãªtre interprÃ©tÃ©e.
  */
 instr_s*	read_file(char *name) {
   FILE *fd;
@@ -132,10 +132,10 @@ instr_s*	read_file(char *name) {
 
 /**
  * \fn uint64_t str_to_uint64(char *str)
- * \brief converti une chaine de caractères en un entier codé sur 64 bits
+ * \brief converti une chaine de caractÃ¨res en un entier codÃ© sur 64 bits
  *
- * \param str la chaine de caractères à convertir
- * \return la chaine de caractères convertie en entier
+ * \param str la chaine de caractÃ¨res Ã  convertir
+ * \return la chaine de caractÃ¨res convertie en entier
  */
 uint64_t str_to_uint64(char *str) {
   uint64_t ret;
@@ -150,9 +150,9 @@ uint64_t str_to_uint64(char *str) {
 
 /**
  * \fn void emula(instr_s *instr)
- * \brief algorithme principal, va exécuter toutes les instructions pas à pas
+ * \brief algorithme principal, va exÃ©cuter toutes les instructions pas Ã  pas
  *
- * \param instr la structure de donnée correspondant au contexte courant.
+ * \param instr la structure de donnÃ©e correspondant au contexte courant.
  */
 void emula(instr_s *instr) {
   fp_instr *fp_instr_a;
