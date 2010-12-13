@@ -148,6 +148,12 @@ uint64_t str_to_uint64(char *str) {
   return ret;
 }
 
+/**
+ * \fn void emula(instr_s *instr)
+ * \brief algorithme principal, va exécuter toutes les instructions pas à pas
+ *
+ * \param instr la structure de donnée correspondant au contexte courant.
+ */
 void emula(instr_s *instr) {
   fp_instr *fp_instr_a;
   uint64_t ins_cur;
