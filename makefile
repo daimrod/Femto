@@ -2,29 +2,33 @@ CC=gcc
 CFLAGS=-Wall -Wshadow -pedantic
 LDFLAGS=-lm
 
-all: main
+EXEC=femto
+SRC= $(wildcard *.c)
+HDR= $(wildcard *.h)
+OBJ= $(SRC:.c=.o)
 
-main: main.o instr.o
-	$(CC) $(LDFLAGS) -o main main.o instr.o
+all: $(EXEC)
 
-main.o: main.c instr.h
-	$(CC) $(CFLAGS) -c main.c
+femto: $(OBJ)
+	$(CC) -o $@ $^ $(LDFLAGS)
 
-instr.o: instr.c instr.h
-	$(CC) $(CFLAGS) -c instr.c
+instr.o: instr.h
+
+%.o: %.c
+	$(CC) -o $@ -c $< $(CFLAGS)
 
 run: all
-	./main
+	./$(EXEC)
 
 clean:
 	rm -f *.o *~
 
 mrproper: clean
-	rm ./main
+	rm $(EXEC)
 
-pack: main.c instr.c test.c instr.h notes makefile
-	tar -cf femto.tar main.c instr.c test.c instr.h notes makefile
+pack: main.c instr.c instr.h notes makefile
+	tar -cf femto.tar main.c instr.c instr.h notes makefile
 	gzip -c femto.tar > femto.tar.gz
 
-doc: main.c instr.c instr.h test.c
+doc: $(SRC) $(HDR)
 	doxygen doxyfile
