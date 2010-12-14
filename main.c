@@ -165,9 +165,8 @@ void emula(instr_s *instr) {
   fp_instr_a = f_init();
   flags = 0;
   for (i = 0; i < 16; ++i)
-    reg[i] = i;
+    reg[i] = 0;
 
-  
   while (instr->ip < instr->nb) {
     /*  Recuperation de l'instruction courante  */
     ins_cur = instr->ins[instr->ip];
