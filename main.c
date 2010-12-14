@@ -178,5 +178,8 @@ void emula(instr_s *instr) {
     /*  On execute l'instruction demandee si necessaire  */
     if ((suf & flags) | !suf)
       fp_instr_a[op](reg, ra, instr, &flags);
+    /* sinon on passe a l'instruction suivante */
+    else
+      INC_IP(instr);
   }
 }
