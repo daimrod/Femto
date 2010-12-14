@@ -1,6 +1,6 @@
 #include "instr.h"
 
-static void mod_ip(instr_s *instr_sa, int32_t offset) {
+void mod_ip(instr_s *instr_sa, int32_t offset) {
   int32_t new_ip;
 
   new_ip = instr_sa->ip + offset;
@@ -50,10 +50,10 @@ void	f_cmp	(float *reg, uint8_t *ra, instr_s *instr_sa, uint8_t *flags) {
 
   if (reg[ra[0]] == reg[ra[1]])
     *flags = *flags | 0x01;
-  else if (reg[ra[0]] < reg[ra[1]])
-    *flags = *flags | 0x02;
   else
     *flags = *flags | 0x04;
+  if (reg[ra[0]] < reg[ra[1]])
+    *flags = *flags | 0x02;
   INC_IP(instr_sa);
 }
 
