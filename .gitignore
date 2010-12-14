@@ -1,6 +1,5 @@
 *.o
 femto
 doc/*
-doxyfile
 *~
 *.swp
