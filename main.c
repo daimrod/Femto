@@ -1,8 +1,6 @@
 /**
  * \file main.c
  * \brief Programme principale pour l'émulateur femto
- * \author Grau.N Jadi.G
- * \date 6 Décembre 2010
  *
  * Programme réalisant l'émulation d'un processeur femto en lisant le fichier indiqué
  */
