@@ -29,7 +29,10 @@ void emula(instr_s *instr);
 int main(int argc, char *argv[]) {
   instr_s *instr;
 
-  instr = read_file("./femto_test");
+  if (argc > 1)
+    instr = read_file(argv[1]);
+  else
+    instr = read_file("./femto_test");
   emula(instr);
 
   free(instr);
