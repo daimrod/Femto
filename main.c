@@ -15,6 +15,7 @@ void	split(uint64_t instr, uint8_t *op, uint8_t *suf, uint8_t *ra);
 instr_s*	read_file(char *name);
 uint64_t str_to_uint64(char *str);
 void emula(instr_s *instr);
+void emula_sbs(instr_s *instr);
 void desa(instr_s *instr);
 void desa_print_line(uint64_t ins_cur);
 
@@ -43,11 +44,18 @@ int main(int argc, char *argv[]) {
       free(instr);
       instr = NULL;
       break;
+    } else if (!strncmp(argv[1], "-s", 2)) {
+      instr = read_file(argv[2]);
+      emula_sbs(instr);
+      free(instr);
+      instr = NULL;
+      break;
     }
   default:
-    printf("usage: ./femto (-d | -e) nom_fichier\n");
+    printf("usage: ./femto (-d | -e | -s) nom_fichier\n");
     printf("\t-d desassemble le code\n");
     printf("\t-e execute le code\n");
+    printf("\t-s execute le code en mode pas a pas\n");
   }
 
   return 0;
@@ -226,6 +234,7 @@ void desa_print_line(uint64_t ins_cur) {
   /*  Decomposition de l'instruction  */
   split(ins_cur, &op, &suf, ra);
 
+  /*  Affichage de la ligne */
   printf("%s%s", ins_a[op], suf_a[suf]);
   printf(ra_a[op], ra[0], ra[1], ra[2]);
   switch (op) {
@@ -244,3 +253,35 @@ void desa_print_line(uint64_t ins_cur) {
   }
 }
 
+void emula_sbs(instr_s *instr) {
+  fp_instr *fp_instr_a;
+  uint64_t ins_cur;
+  uint8_t op, suf, ra[3], flags;
+  float reg[16];
+  size_t i;
+
+  fp_instr_a = f_init();
+  flags = 0;
+  for (i = 0; i < 16; ++i)
+    reg[i] = 0;
+
+  while (instr->ip < instr->nb - 1) {
+    /*  Recuperation de l'instruction courante  */
+    ins_cur = instr->ins[instr->ip];
+
+    /*  Affichage de l'instruction desassemblee */
+    desa_print_line(ins_cur);
+    getchar();
+
+    /*  Decomposition de l'instruction  */
+    split(ins_cur, &op, &suf, ra);
+
+    /*  On execute l'instruction demandee si necessaire  */
+    if ((suf & flags) | !suf)
+      fp_instr_a[op](reg, ra, instr, &flags);
+    /* sinon on passe a l'instruction suivante */
+    else
+      INC_IP(instr);
+    printf("\n");
+  }
+}
