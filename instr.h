@@ -40,6 +40,7 @@ typedef struct {
 typedef void (*fp_instr)(float*, uint8_t*, instr_s*, uint8_t*);
 
 fp_instr*	f_init(void);
+void mod_ip(instr_s *instr_sa, int32_t offset);
 
 void	f_add	(float *reg, uint8_t *ra, instr_s *instr, uint8_t *flags);
 void	f_b	(float *reg, uint8_t *ra, instr_s *instr, uint8_t *flags);
