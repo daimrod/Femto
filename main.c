@@ -16,6 +16,7 @@ instr_s*	read_file(char *name);
 uint64_t str_to_uint64(char *str);
 void emula(instr_s *instr);
 void desa(instr_s *instr);
+void desa_print_line(uint64_t ins_cur);
 
 /**
  * \fn int main(int argc, char *argv[])
@@ -198,5 +199,48 @@ void emula(instr_s *instr) {
 }
 
 void desa(instr_s *instr) {
+  size_t i;
+  uint64_t ins_cur;
 
+  for (i = 0; i < instr->nb - 1; ++i) {
+    /*  Recuperation de l'instruction courante  */
+    ins_cur = instr->ins[i];
+
+    /*  Affichage de l'instruction desassemblee */
+    desa_print_line(ins_cur);
+    printf("\n");
+  }
 }
+
+void desa_print_line(uint64_t ins_cur) {
+  uint32_t tmp;
+  uint8_t op, suf, ra[3];
+  char *suf_a[] = { "AL", "EQ", "LT", "LE", "NE" };
+  char *ins_a[] = { "add", "b", "cmp", "load", "move",
+		    "mul", "pow", "print", "read",
+		    "stop", "sub" };
+  char *ra_a[] = { " r%d, r%d, r%d", "", " r%d, r%d", " r%d",
+		   " r%d, r%d", " r%d, r%d, r%d", " r%d, r%d",
+		   " r%d", " r%d", "", " r%d, r%d, r%d" };
+
+  /*  Decomposition de l'instruction  */
+  split(ins_cur, &op, &suf, ra);
+
+  printf("%s%s", ins_a[op], suf_a[suf]);
+  printf(ra_a[op], ra[0], ra[1], ra[2]);
+  switch (op) {
+  case 1:
+    tmp = ins_cur >> 32;
+    printf(" %d", * (int*) &tmp);
+    break;
+  case 3:
+    tmp = ins_cur >> 32;
+    printf(" %f", * (float*) &tmp);
+    break;
+  case 6:
+    tmp = ins_cur >> 32;
+    printf(" %f", * (float*) &tmp);
+    break;
+  }
+}
+
