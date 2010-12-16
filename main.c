@@ -15,6 +15,7 @@ void	split(uint64_t instr, uint8_t *op, uint8_t *suf, uint8_t *ra);
 instr_s*	read_file(char *name);
 uint64_t str_to_uint64(char *str);
 void emula(instr_s *instr);
+void desa(instr_s *instr);
 
 /**
  * \fn int main(int argc, char *argv[])
@@ -27,14 +28,27 @@ void emula(instr_s *instr);
 int main(int argc, char *argv[]) {
   instr_s *instr;
 
-  if (argc > 1)
-    instr = read_file(argv[1]);
-  else
-    instr = read_file("./femto_test");
-  emula(instr);
+  switch (argc) {
+  case 3:
+    if (!strncmp(argv[1], "-d", 2)) {
+      instr = read_file(argv[2]);
+      desa(instr);
+      free(instr);
+      instr = NULL;
+      break;
+    } else if (!strncmp(argv[1], "-e", 2)) {
+      instr = read_file(argv[2]);
+      emula(instr);
+      free(instr);
+      instr = NULL;
+      break;
+    }
+  default:
+    printf("usage: ./femto (-d | -e) nom_fichier\n");
+    printf("\t-d desassemble le code\n");
+    printf("\t-e execute le code\n");
+  }
 
-  free(instr);
-  instr = NULL;
   return 0;
 }
 
@@ -181,4 +195,8 @@ void emula(instr_s *instr) {
     else
       INC_IP(instr);
   }
+}
+
+void desa(instr_s *instr) {
+
 }
