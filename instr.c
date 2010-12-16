@@ -90,6 +90,7 @@ void	f_print	(float *reg, uint8_t *ra, instr_s *instr_sa, uint8_t *flags) {
 
 void	f_read	(float *reg, uint8_t *ra, instr_s *instr_sa, uint8_t *flags) {
   scanf("%f", &(reg[ra[0]]));
+  while (fgetc(stdin) != '\n');
   INC_IP(instr_sa);
 }
 
