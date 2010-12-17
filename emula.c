@@ -1,6 +1,7 @@
 #include "emula.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 /**
  * \fn void	split(uint64_t instr, uint8_t *op, uint8_t *suf, uint8_t *ra)
@@ -40,7 +41,7 @@ instr_s*	read_file(char *name) {
 
   /*  reservation de la memoire pour stocker toutes les instructions  */
   size = 10;
-  if ((mem = (uint64_t*) malloc(sizeof(mem) * size)) == NULL) {
+  if ((mem = (uint64_t*) malloc(sizeof(uint64_t) * size)) == NULL) {
     fputs("erreur: impossible d'allouer la memoire pour la lecture\n", stderr);
     exit(-1);
   }
@@ -59,7 +60,7 @@ instr_s*	read_file(char *name) {
     if (i >= size) {
       size *= 2;
       /*  si on n'a pas assez de place on double la taille  */
-      if ((mem = (uint64_t*) realloc(mem, sizeof(mem) * size)) == NULL) {
+      if ((mem = (uint64_t*) realloc(mem, sizeof(uint64_t) * size)) == NULL) {
 	fputs("erreur: impossible d'allouer la memoire pour la lecture\n", stderr);
 	exit(-1);
       }
@@ -70,7 +71,7 @@ instr_s*	read_file(char *name) {
   fd = NULL;
 
   /*  reservation de la memoire pour la structure a retourner  */
-  if ((ret = (instr_s*) malloc(sizeof(ret))) == NULL) {
+  if ((ret = (instr_s*) malloc(sizeof(instr_s))) == NULL) {
 	fputs("erreur: impossible d'allouer la memoire\n", stderr);
 	exit(-1);
   }
@@ -80,7 +81,7 @@ instr_s*	read_file(char *name) {
    *  une instruction vide a la fin
    */
   mem[i] = 0;
-  if((ret->ins = (uint64_t*) malloc(sizeof(ret->ins) * i)) == NULL) {
+  if((ret->ins = (uint64_t*) malloc(sizeof(uint64_t) * i)) == NULL) {
 	fputs("erreur: impossible d'allouer la memoire\n", stderr);
 	exit(-1);
   }
@@ -88,7 +89,8 @@ instr_s*	read_file(char *name) {
   /*  remplissage de la structure  */
   ret->ins = (uint64_t*) memcpy(ret->ins, mem, sizeof(uint64_t) * i);
   ret->ip = 0;
-  ret->nb = i+1;
+  ret->nb = i;
+
   free(mem);
   mem = NULL;
 
@@ -145,13 +147,52 @@ void emula(instr_s *instr) {
     else
       INC_IP(instr);
   }
+
+  free(fp_instr_a);
+  fp_instr_a = NULL;
+}
+
+void emula_sbs(instr_s *instr) {
+  fp_instr *fp_instr_a;
+  uint64_t ins_cur;
+  uint8_t op, suf, ra[3], flags;
+  float reg[16];
+  size_t i;
+
+  fp_instr_a = f_init();
+  flags = 0;
+  for (i = 0; i < 16; ++i)
+    reg[i] = 0;
+
+  while (instr->ip < instr->nb) {
+    /*  Recuperation de l'instruction courante  */
+    ins_cur = instr->ins[instr->ip];
+
+    /*  Affichage de l'instruction desassemblee */
+    desa_print_line(ins_cur);
+    getchar();
+
+    /*  Decomposition de l'instruction  */
+    split(ins_cur, &op, &suf, ra);
+
+    /*  On execute l'instruction demandee si necessaire  */
+    if ((suf & flags) | !suf)
+      fp_instr_a[op](reg, ra, instr, &flags);
+    /* sinon on passe a l'instruction suivante */
+    else
+      INC_IP(instr);
+    printf("\n");
+  }
+
+  free(fp_instr_a);
+  fp_instr_a = NULL;
 }
 
 void desa(instr_s *instr) {
   size_t i;
   uint64_t ins_cur;
 
-  for (i = 0; i < instr->nb - 1; ++i) {
+  for (i = 0; i < instr->nb; ++i) {
     /*  Recuperation de l'instruction courante  */
     ins_cur = instr->ins[i];
 
@@ -191,38 +232,5 @@ void desa_print_line(uint64_t ins_cur) {
     tmp = ins_cur >> 32;
     printf(" %f", * (float*) &tmp);
     break;
-  }
-}
-
-void emula_sbs(instr_s *instr) {
-  fp_instr *fp_instr_a;
-  uint64_t ins_cur;
-  uint8_t op, suf, ra[3], flags;
-  float reg[16];
-  size_t i;
-
-  fp_instr_a = f_init();
-  flags = 0;
-  for (i = 0; i < 16; ++i)
-    reg[i] = 0;
-
-  while (instr->ip < instr->nb - 1) {
-    /*  Recuperation de l'instruction courante  */
-    ins_cur = instr->ins[instr->ip];
-
-    /*  Affichage de l'instruction desassemblee */
-    desa_print_line(ins_cur);
-    getchar();
-
-    /*  Decomposition de l'instruction  */
-    split(ins_cur, &op, &suf, ra);
-
-    /*  On execute l'instruction demandee si necessaire  */
-    if ((suf & flags) | !suf)
-      fp_instr_a[op](reg, ra, instr, &flags);
-    /* sinon on passe a l'instruction suivante */
-    else
-      INC_IP(instr);
-    printf("\n");
   }
 }

@@ -24,25 +24,20 @@ int main(int argc, char *argv[]) {
 
   switch (argc) {
   case 3:
-    if (!strncmp(argv[1], "-d", 2)) {
-      instr = read_file(argv[2]);
+    instr = read_file(argv[2]);
+
+    if (!strncmp(argv[1], "-d", 2))
       desa(instr);
-      free(instr);
-      instr = NULL;
-      break;
-    } else if (!strncmp(argv[1], "-e", 2)) {
-      instr = read_file(argv[2]);
+    else if (!strncmp(argv[1], "-e", 2))
       emula(instr);
-      free(instr);
-      instr = NULL;
-      break;
-    } else if (!strncmp(argv[1], "-s", 2)) {
-      instr = read_file(argv[2]);
+    else if (!strncmp(argv[1], "-s", 2))
       emula_sbs(instr);
-      free(instr);
-      instr = NULL;
-      break;
-    }
+
+    free(instr->ins);
+    instr->ins = NULL;
+    free(instr);
+    instr = NULL;
+    break;
   default:
     printf("usage: ./femto (-d | -e | -s) nom_fichier\n");
     printf("\t-d desassemble le code\n");
