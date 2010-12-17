@@ -31,6 +31,7 @@ void	split(uint64_t instr, uint8_t *op, uint8_t *suf, uint8_t *ra) {
  *
  * Lit le fichier ligne par ligne en convertissant chaque ligne en une instruction
  * qui pourra être interprétée.
+ * Cette fonction ne vérifie pas que le fichier a une forme correcte.
  */
 instr_s*	read_file(char *name) {
   FILE *fd;
@@ -66,6 +67,7 @@ instr_s*	read_file(char *name) {
       }
     }
   }
+
   /*  fermeture du fichier  */
   fclose(fd);
   fd = NULL;
@@ -80,7 +82,6 @@ instr_s*	read_file(char *name) {
    *  allocation pile poil la bonne taille pour le tableau d'instruction de la structure plus
    *  une instruction vide a la fin
    */
-  mem[i] = 0;
   if((ret->ins = (uint64_t*) malloc(sizeof(uint64_t) * i)) == NULL) {
 	fputs("erreur: impossible d'allouer la memoire\n", stderr);
 	exit(-1);
@@ -91,6 +92,7 @@ instr_s*	read_file(char *name) {
   ret->ip = 0;
   ret->nb = i;
 
+  /* liberation de la memoire allouee temporairement */
   free(mem);
   mem = NULL;
 
@@ -99,7 +101,7 @@ instr_s*	read_file(char *name) {
 
 /**
  * \fn uint64_t str_to_uint64(char *str)
- * \brief converti une chaine de caractères en un entier codé sur 64 bits
+ * \brief Converti une chaine de caractères en un entier codé sur 64 bits
  *
  * \param str la chaine de caractères à convertir
  * \return la chaine de caractères convertie en entier
@@ -109,6 +111,7 @@ uint64_t str_to_uint64(char *str) {
   size_t i;
 
   ret = 0;
+  /* on lit tant que le caractere courant est un nombre */
   for (i = 0; str[i] >= '0' && str[i] <= '9'; ++i)
     ret = ret * 10 + (str[i] - '0');
   
@@ -117,9 +120,10 @@ uint64_t str_to_uint64(char *str) {
 
 /**
  * \fn void emula(instr_s *instr)
- * \brief algorithme principal, va exécuter toutes les instructions pas à pas
+ * \brief Algorithme principal émulant le processeur femto,
+ * il va exécuter toutes les instructions les unes après les autres
  *
- * \param instr la structure de donnée correspondant au contexte courant.
+ * \param instr la structure de donnée correspondant au contexte courant
  */
 void emula(instr_s *instr) {
   fp_instr *fp_instr_a;
@@ -152,6 +156,17 @@ void emula(instr_s *instr) {
   fp_instr_a = NULL;
 }
 
+/**
+ * \fn void emula(instr_s *instr)
+ * \brief Algorithme principal émulant le processeur femto,
+ * il va exécuter toutes les instructions en mode pas à pas
+ *
+ * \param instr la structure de donnée correspondant au contexte courant
+ *
+ * En mode pas à pas, toutes les instructions sont affichées désassemblées
+ * et le programme attend que l'utilisateur appuie sur la touche *entrée*
+ * pour exécuter l'instruction courante.
+ */
 void emula_sbs(instr_s *instr) {
   fp_instr *fp_instr_a;
   uint64_t ins_cur;
@@ -188,6 +203,16 @@ void emula_sbs(instr_s *instr) {
   fp_instr_a = NULL;
 }
 
+/**
+ * \fn void desa(instr_s *instr)
+ * \brief Désassemble le programme chargé en mémoire selon
+ * le jeu d'instruction femto
+ *
+ * \param instr la structure de donnée correspondant au contexte courant
+ *
+ * Cette fonction parcourt le tableau d'instruction et affiche au fur et
+ * à mesure le code qui est désassemblé.
+ */
 void desa(instr_s *instr) {
   size_t i;
   uint64_t ins_cur;
@@ -202,6 +227,13 @@ void desa(instr_s *instr) {
   }
 }
 
+/**
+ * \fn void desa_print_line(uint64_t ins_cur)
+ * \brief Affiche le code désassemblé de l'instruction envoyée
+ * en paramètre
+ *
+ * \param instr la structure de donnée correspondant au contexte courant
+ */
 void desa_print_line(uint64_t ins_cur) {
   uint32_t tmp;
   uint8_t op, suf, ra[3];
@@ -219,6 +251,8 @@ void desa_print_line(uint64_t ins_cur) {
   /*  Affichage de la ligne */
   printf("%s%s", ins_a[op], suf_a[suf]);
   printf(ra_a[op], ra[0], ra[1], ra[2]);
+
+  /* teste les trois cas necessitant la partie haute de l'instruction */
   switch (op) {
   case 1:
     tmp = ins_cur >> 32;

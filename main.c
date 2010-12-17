@@ -18,6 +18,12 @@
  * \param argc nombre de paramètres envoyés au programme
  * \param argv paramètres envoyés au programme
  * \return un code d'erreur
+ *
+ * Cette fonction va analyser les paramètres envoyés au programme
+ * et si le format est correct, réaliser l'opération demandée
+ * (exécution en mode normal, exécution en mode pas-à-pas, désassemblage).
+ * Si le format est incorrect un message d'aide indiquant le format à
+ * respecter est affiché puis le programme se termine.
  */
 int main(int argc, char *argv[]) {
   instr_s *instr;
