@@ -91,6 +91,7 @@ instr_s*	read_file(char *name) {
   ret->ins = (uint64_t*) memcpy(ret->ins, mem, sizeof(uint64_t) * i);
   ret->ip = 0;
   ret->nb = i;
+  ret->flags = 0; 
 
   /* liberation de la memoire allouee temporairement */
   free(mem);
@@ -128,12 +129,11 @@ uint64_t str_to_uint64(char *str) {
 void emula(instr_s *instr) {
   fp_instr *fp_instr_a;
   uint64_t ins_cur;
-  uint8_t op, suf, ra[3], flags;
+  uint8_t op, suf, ra[3];
   float reg[16];
   size_t i;
 
   fp_instr_a = f_init();
-  flags = 0;
   for (i = 0; i < 16; ++i)
     reg[i] = 0;
 
@@ -145,8 +145,8 @@ void emula(instr_s *instr) {
     split(ins_cur, &op, &suf, ra);
 
     /*  On execute l'instruction demandee si necessaire  */
-    if ((suf & flags) | !suf)
-      fp_instr_a[op](reg, ra, instr, &flags);
+    if ((suf & instr->flags) | !suf)
+      fp_instr_a[op](reg, ra, instr);
     /* sinon on passe a l'instruction suivante */
     else
       INC_IP(instr);
@@ -170,12 +170,11 @@ void emula(instr_s *instr) {
 void emula_sbs(instr_s *instr) {
   fp_instr *fp_instr_a;
   uint64_t ins_cur;
-  uint8_t op, suf, ra[3], flags;
+  uint8_t op, suf, ra[3];
   float reg[16];
   size_t i;
 
   fp_instr_a = f_init();
-  flags = 0;
   for (i = 0; i < 16; ++i)
     reg[i] = 0;
 
@@ -191,8 +190,8 @@ void emula_sbs(instr_s *instr) {
     split(ins_cur, &op, &suf, ra);
 
     /*  On execute l'instruction demandee si necessaire  */
-    if ((suf & flags) | !suf)
-      fp_instr_a[op](reg, ra, instr, &flags);
+    if ((suf & instr->flags) | !suf)
+      fp_instr_a[op](reg, ra, instr);
     /* sinon on passe a l'instruction suivante */
     else
       INC_IP(instr);

@@ -33,31 +33,31 @@ fp_instr*	f_init(void) {
   return fp_instr_a;
 }
 
-void	f_add	(float *reg, uint8_t *ra, instr_s *instr_sa, uint8_t *flags) {
+void	f_add	(float *reg, uint8_t *ra, instr_s *instr_sa) {
   reg[ra[0]]	= reg[ra[1]] + reg[ra[2]];
   INC_IP(instr_sa);
 }
 
-void	f_b	(float *reg, uint8_t *ra, instr_s *instr_sa, uint8_t *flags) {
+void	f_b	(float *reg, uint8_t *ra, instr_s *instr_sa) {
   int32_t offset;
 
   offset = instr_sa->ins[instr_sa->ip] >> 32;
   mod_ip(instr_sa, offset);
 }
 
-void	f_cmp	(float *reg, uint8_t *ra, instr_s *instr_sa, uint8_t *flags) {
-  *flags = 0x00;
+void	f_cmp	(float *reg, uint8_t *ra, instr_s *instr_sa) {
+  instr_sa->flags = 0x00;
 
   if (reg[ra[0]] == reg[ra[1]])
-    *flags = *flags | 0x01;
+    instr_sa->flags = instr_sa->flags | 0x01;
   else
-    *flags = *flags | 0x04;
+    instr_sa->flags = instr_sa->flags | 0x04;
   if (reg[ra[0]] < reg[ra[1]])
-    *flags = *flags | 0x02;
+    instr_sa->flags = instr_sa->flags | 0x02;
   INC_IP(instr_sa);
 }
 
-void	f_load	(float *reg, uint8_t *ra, instr_s *instr_sa, uint8_t *flags) {
+void	f_load	(float *reg, uint8_t *ra, instr_s *instr_sa) {
   uint32_t tmp;
   
   tmp = instr_sa->ins[instr_sa->ip] >> 32;
@@ -65,17 +65,17 @@ void	f_load	(float *reg, uint8_t *ra, instr_s *instr_sa, uint8_t *flags) {
   INC_IP(instr_sa);
 }
 
-void	f_move	(float *reg, uint8_t *ra, instr_s *instr_sa, uint8_t *flags) {
+void	f_move	(float *reg, uint8_t *ra, instr_s *instr_sa) {
   reg[ra[0]] = reg[ra[1]];
   INC_IP(instr_sa);
 }
 
-void	f_mul	(float *reg, uint8_t *ra, instr_s *instr_sa, uint8_t *flags) {
+void	f_mul	(float *reg, uint8_t *ra, instr_s *instr_sa) {
   reg[ra[0]] = reg[ra[1]] * reg[ra[2]];
   INC_IP(instr_sa);
 }
 
-void	f_pow	(float *reg, uint8_t *ra, instr_s *instr_sa, uint8_t *flags) {
+void	f_pow	(float *reg, uint8_t *ra, instr_s *instr_sa) {
   uint32_t tmp;
 
   tmp = instr_sa->ins[instr_sa->ip] >> 32;
@@ -83,22 +83,22 @@ void	f_pow	(float *reg, uint8_t *ra, instr_s *instr_sa, uint8_t *flags) {
   INC_IP(instr_sa);
 }
 
-void	f_print	(float *reg, uint8_t *ra, instr_s *instr_sa, uint8_t *flags) {
+void	f_print	(float *reg, uint8_t *ra, instr_s *instr_sa) {
   printf("%f\n", reg[ra[0]]);
   INC_IP(instr_sa);
 }
 
-void	f_read	(float *reg, uint8_t *ra, instr_s *instr_sa, uint8_t *flags) {
+void	f_read	(float *reg, uint8_t *ra, instr_s *instr_sa) {
   scanf("%f", &(reg[ra[0]]));
   while (fgetc(stdin) != '\n');
   INC_IP(instr_sa);
 }
 
-void	f_stop	(float *reg, uint8_t *ra, instr_s *instr_sa, uint8_t *flags) {
+void	f_stop	(float *reg, uint8_t *ra, instr_s *instr_sa) {
   exit(0);
 }
 
-void	f_sub	(float *reg, uint8_t *ra, instr_s *instr_sa, uint8_t *flags) {
+void	f_sub	(float *reg, uint8_t *ra, instr_s *instr_sa) {
   reg[ra[0]] = reg[ra[1]] - reg[ra[2]];
   INC_IP(instr_sa);
 }
