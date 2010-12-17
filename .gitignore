@@ -4,3 +4,6 @@ doc/*
 *~
 *.swp
 test_*
+auto/*
+rapport.*
+!rapport.tex
