@@ -1,5 +1,6 @@
 *.o
 femto
+fgui
 doc/*
 *~
 *.swp

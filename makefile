@@ -9,10 +9,14 @@ OBJ= $(SRC:.c=.o)
 
 all: $(EXEC)
 
-femto: $(OBJ)
+femto: main.o emula.o instr.o
 	$(CC) -o $@ $^ $(LDFLAGS)
 
+fgui: emula.o instr.o gui.o fgui.o
+	$(CC) -o $@ $^ $(LDFLAGS) -lncurses
+
 instr.o: instr.h
+gui.o: gui.h
 
 %.o: %.c
 	$(CC) -o $@ -c $< $(CFLAGS)
