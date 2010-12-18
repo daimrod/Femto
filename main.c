@@ -39,10 +39,7 @@ int main(int argc, char *argv[]) {
     else if (!strncmp(argv[1], "-s", 2))
       emula_sbs(instr);
 
-    free(instr->ins);
-    instr->ins = NULL;
-    free(instr);
-    instr = NULL;
+    FREE_INS(instr);
     break;
   default:
     printf("usage: ./femto (-d | -e | -s) nom_fichier\n");
