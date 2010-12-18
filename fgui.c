@@ -4,6 +4,7 @@
 #include "util.h"
 #include "fgui_instr.h"
 
+#include <ncurses.h>
 #include <stdio.h>
 
 void fgui_print_reg(float *reg, window *w_reg);
@@ -96,10 +97,6 @@ void fgui_emula(instr_s *instr_sa,
   fp_instr_a = NULL;
 }
 
-void fgui_print_reg(float *reg, window *w_reg) {
-
-}
-
 void fgui_print_prog(instr_s *instr_sa, window *w_prog) {
   char *line;
   size_t size, i, start, end;
@@ -109,19 +106,22 @@ void fgui_print_prog(instr_s *instr_sa, window *w_prog) {
     start = 0;
     end	  = size;
   } else {
-    size  = get_window_height(w_prog) - 2;
-    start = instr_sa->ip;
-    end = instr_sa->ip + size;
+    size  = get_window_height(w_prog) - 4;
+    end = MIN(instr_sa->ip + size, instr_sa->nb);
+    start = end - size;
   }
 
   line = (char*) xmalloc(sizeof(char) * 255);
 
-  for (i = start; i < end; ++i) {
-    line = desa_line(line, instr_sa->ins[i]);
-    if (i == instr_sa->ip)
+  for (i = 0; i < (end-start); ++i)
+    clear_line_from_to(w_prog, 2+i, 2, get_window_width(w_prog)-2, 0);
+
+  for (i = 0; i < (end-start); ++i) {
+    line = desa_line(line, instr_sa->ins[i+start]);
+    if (i+start == instr_sa->ip)
       printfXY(w_prog, 2, i+2, 0, "-> ");
     else
-      printfXY(w_prog, 2, i+2, 0, "++ ");
+      printfXY(w_prog, 2, i+2, 0, "++ ", i);
     printfXY(w_prog, 5, i+2, 0, line);
   }
 
@@ -134,6 +134,7 @@ void fgui_init(window **w_prog,
 	       window **w_out,
 	       window **w_in) {
   init_gui();
+  curs_set(0);
   *w_prog = create_window(get_term_width() / 3 * 2,
 			 get_term_height() / 4 * 3,
 			 0, 0, 1);

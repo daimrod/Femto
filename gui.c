@@ -120,3 +120,10 @@ char pollchar(window *w) {
   nodelay(w,TRUE);
   return wgetch(w);
 }
+
+void clear_line_from_to(window *w, int line, int from, int to, int col) {
+  int i;
+
+  for (i = from; i < to; ++i)
+    printfXY(w, i, line, col, " ");
+}

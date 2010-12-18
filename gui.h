@@ -134,4 +134,5 @@ char pollchar(window *w);
 */
 int printfXY(window *w, int posX, int posY, int col, const char *patron, ...);
 
+void clear_line_from_to(window *w, int line, int from, int to, int col);
 #endif
