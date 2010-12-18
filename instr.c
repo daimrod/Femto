@@ -15,10 +15,7 @@ void mod_ip(instr_s *instr_sa, int32_t offset) {
 fp_instr*	f_init(void) {
   fp_instr *fp_instr_a;
 
-  if ((fp_instr_a = (fp_instr*) malloc(sizeof(fp_instr_a) * 11)) == NULL) {
-    fputs("erreur: impossible d'allouer le tableau d'initialisation\n", stderr);
-    exit(-1);
-  }
+  fp_instr_a = (fp_instr*) xmalloc(sizeof(fp_instr_a) * 11);
   fp_instr_a[0] = &f_add;
   fp_instr_a[1] = &f_b;
   fp_instr_a[2] = &f_cmp;
