@@ -1,7 +1,4 @@
 #include "emula.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 /**
  * \fn void	split(uint64_t instr, uint8_t *op, uint8_t *suf, uint8_t *ra)
@@ -42,10 +39,7 @@ instr_s*	read_file(char *name) {
 
   /*  reservation de la memoire pour stocker toutes les instructions  */
   size = 10;
-  if ((mem = (uint64_t*) malloc(sizeof(uint64_t) * size)) == NULL) {
-    fputs("erreur: impossible d'allouer la memoire pour la lecture\n", stderr);
-    exit(-1);
-  }
+  mem = (uint64_t*) xmalloc(sizeof(uint64_t) * size); 
 
   /*  ouverture le fichier specifie en lecture seule  */
   if ((fd = fopen(name, "r")) == NULL) {
@@ -73,19 +67,13 @@ instr_s*	read_file(char *name) {
   fd = NULL;
 
   /*  reservation de la memoire pour la structure a retourner  */
-  if ((ret = (instr_s*) malloc(sizeof(instr_s))) == NULL) {
-	fputs("erreur: impossible d'allouer la memoire\n", stderr);
-	exit(-1);
-  }
+  ret = (instr_s*) xmalloc(sizeof(instr_s)); 
 
   /*  
    *  allocation pile poil la bonne taille pour le tableau d'instruction de la structure plus
    *  une instruction vide a la fin
    */
-  if((ret->ins = (uint64_t*) malloc(sizeof(uint64_t) * i)) == NULL) {
-	fputs("erreur: impossible d'allouer la memoire\n", stderr);
-	exit(-1);
-  }
+  ret->ins = (uint64_t*) xmalloc(sizeof(uint64_t) * i); 
 
   /*  remplissage de la structure  */
   ret->ins = (uint64_t*) memcpy(ret->ins, mem, sizeof(uint64_t) * i);
@@ -168,11 +156,14 @@ void emula(instr_s *instr) {
  * pour exécuter l'instruction courante.
  */
 void emula_sbs(instr_s *instr) {
+  char *line; 
   fp_instr *fp_instr_a;
   uint64_t ins_cur;
   uint8_t op, suf, ra[3];
   float reg[16];
   size_t i;
+
+  line = (char*) xmalloc(sizeof(char) * 255); 
 
   fp_instr_a = f_init();
   for (i = 0; i < 16; ++i)
@@ -183,7 +174,8 @@ void emula_sbs(instr_s *instr) {
     ins_cur = instr->ins[instr->ip];
 
     /*  Affichage de l'instruction desassemblee */
-    desa_print_line(ins_cur);
+    line = desa_line(line, ins_cur);
+    printf("%s", line);
     getchar();
 
     /*  Decomposition de l'instruction  */
@@ -198,6 +190,8 @@ void emula_sbs(instr_s *instr) {
     printf("\n");
   }
 
+  free(line);
+  line = NULL; 
   free(fp_instr_a);
   fp_instr_a = NULL;
 }
@@ -215,25 +209,33 @@ void emula_sbs(instr_s *instr) {
 void desa(instr_s *instr) {
   size_t i;
   uint64_t ins_cur;
+  char *line; 
+
+  line = (char*) xmalloc(sizeof(char) * 255); 
 
   for (i = 0; i < instr->nb; ++i) {
     /*  Recuperation de l'instruction courante  */
     ins_cur = instr->ins[i];
 
     /*  Affichage de l'instruction desassemblee */
-    desa_print_line(ins_cur);
-    printf("\n");
+    line = desa_line(line, ins_cur);
+    printf("%s\n", line);
   }
+  free(line);
+  line = NULL;
 }
 
 /**
- * \fn void desa_print_line(uint64_t ins_cur)
- * \brief Affiche le code désassemblé de l'instruction envoyée
- * en paramètre
+ * \fn char* desa_line(uint64_t ins_cur)
+ * \brief Désassemble le code de l'instruction envoyée en
+ * paramètre et retourne la chaine de caratère correspondante
  *
+ * \param line un pointeur sur l'espace qui va contenir la chaine de caractères
  * \param instr la structure de donnée correspondant au contexte courant
+ * \return la chaine de caractères correspondante à l'instruction
  */
-void desa_print_line(uint64_t ins_cur) {
+char* desa_line(char *line, uint64_t ins_cur) {
+  char *mem;
   uint32_t tmp;
   uint8_t op, suf, ra[3];
   char *suf_a[] = { "AL", "EQ", "LT", "LE", "NE" };
@@ -244,26 +246,35 @@ void desa_print_line(uint64_t ins_cur) {
 		   " r%d, r%d", " r%d, r%d, r%d", " r%d, r%d",
 		   " r%d", " r%d", "", " r%d, r%d, r%d" };
 
+  mem = (char*) xmalloc(sizeof(char) * 255); 
   /*  Decomposition de l'instruction  */
   split(ins_cur, &op, &suf, ra);
 
-  /*  Affichage de la ligne */
-  printf("%s%s", ins_a[op], suf_a[suf]);
-  printf(ra_a[op], ra[0], ra[1], ra[2]);
+  snprintf(mem, sizeof(char) * 255, "%s%s", ins_a[op], suf_a[suf]);
+  line = strcpy(line, mem);
+  snprintf(mem, sizeof(char) * 255, ra_a[op], ra[0], ra[1], ra[2]);
+  line = strcat(line, mem);
 
   /* teste les trois cas necessitant la partie haute de l'instruction */
   switch (op) {
   case 1:
     tmp = ins_cur >> 32;
-    printf(" %d", * (int*) &tmp);
+    snprintf(mem, sizeof(char) * 255, " %d", * (int*) &tmp);
+    line = strcat(line, mem);
     break;
   case 3:
     tmp = ins_cur >> 32;
-    printf(" %f", * (float*) &tmp);
+    snprintf(mem, sizeof(char) * 255, " %f", * (float*) &tmp);
+    line = strcat(line, mem);
     break;
   case 6:
     tmp = ins_cur >> 32;
-    printf(" %f", * (float*) &tmp);
+    snprintf(mem, sizeof(char) * 255, " %f", * (float*) &tmp);
+    line = strcat(line, mem);
     break;
   }
+  free(mem);
+  mem = NULL;
+
+  return line;
 }
