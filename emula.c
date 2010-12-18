@@ -108,13 +108,13 @@ uint64_t str_to_uint64(char *str) {
 }
 
 /**
- * \fn void emula(instr_s *instr)
+ * \fn void emula(instr_s *instr_sa)
  * \brief Algorithme principal émulant le processeur femto,
  * il va exécuter toutes les instructions les unes après les autres
  *
- * \param instr la structure de donnée correspondant au contexte courant
+ * \param instr_sa la structure de donnée correspondant au contexte courant
  */
-void emula(instr_s *instr) {
+void emula(instr_s *instr_sa) {
   fp_instr *fp_instr_a;
   uint64_t ins_cur;
   uint8_t op, suf, ra[3];
@@ -125,19 +125,19 @@ void emula(instr_s *instr) {
   for (i = 0; i < 16; ++i)
     reg[i] = 0;
 
-  while (instr->ip < instr->nb) {
+  while (instr_sa->ip < instr_sa->nb) {
     /*  Recuperation de l'instruction courante  */
-    ins_cur = instr->ins[instr->ip];
+    ins_cur = instr_sa->ins[instr_sa->ip];
 
     /*  Decomposition de l'instruction  */
     split(ins_cur, &op, &suf, ra);
 
     /*  On execute l'instruction demandee si necessaire  */
-    if ((suf & instr->flags) | !suf)
-      fp_instr_a[op](reg, ra, instr);
+    if ((suf & instr_sa->flags) | !suf)
+      fp_instr_a[op](reg, ra, instr_sa);
     /* sinon on passe a l'instruction suivante */
     else
-      INC_IP(instr);
+      INC_IP(instr_sa);
   }
 
   free(fp_instr_a);
@@ -145,17 +145,17 @@ void emula(instr_s *instr) {
 }
 
 /**
- * \fn void emula(instr_s *instr)
+ * \fn void emula_sbs(instr_s *instr_sa)
  * \brief Algorithme principal émulant le processeur femto,
  * il va exécuter toutes les instructions en mode pas à pas
  *
- * \param instr la structure de donnée correspondant au contexte courant
+ * \param instr_sa la structure de donnée correspondant au contexte courant
  *
  * En mode pas à pas, toutes les instructions sont affichées désassemblées
  * et le programme attend que l'utilisateur appuie sur la touche *entrée*
  * pour exécuter l'instruction courante.
  */
-void emula_sbs(instr_s *instr) {
+void emula_sbs(instr_s *instr_sa) {
   char *line; 
   fp_instr *fp_instr_a;
   uint64_t ins_cur;
@@ -169,9 +169,9 @@ void emula_sbs(instr_s *instr) {
   for (i = 0; i < 16; ++i)
     reg[i] = 0;
 
-  while (instr->ip < instr->nb) {
+  while (instr_sa->ip < instr_sa->nb) {
     /*  Recuperation de l'instruction courante  */
-    ins_cur = instr->ins[instr->ip];
+    ins_cur = instr_sa->ins[instr_sa->ip];
 
     /*  Affichage de l'instruction desassemblee */
     line = desa_line(line, ins_cur);
@@ -182,11 +182,11 @@ void emula_sbs(instr_s *instr) {
     split(ins_cur, &op, &suf, ra);
 
     /*  On execute l'instruction demandee si necessaire  */
-    if ((suf & instr->flags) | !suf)
-      fp_instr_a[op](reg, ra, instr);
+    if ((suf & instr_sa->flags) | !suf)
+      fp_instr_a[op](reg, ra, instr_sa);
     /* sinon on passe a l'instruction suivante */
     else
-      INC_IP(instr);
+      INC_IP(instr_sa);
     printf("\n");
   }
 
@@ -197,25 +197,25 @@ void emula_sbs(instr_s *instr) {
 }
 
 /**
- * \fn void desa(instr_s *instr)
+ * \fn void desa(instr_s *instr_sa)
  * \brief Désassemble le programme chargé en mémoire selon
  * le jeu d'instruction femto
  *
- * \param instr la structure de donnée correspondant au contexte courant
+ * \param instr_sa la structure de donnée correspondant au contexte courant
  *
  * Cette fonction parcourt le tableau d'instruction et affiche au fur et
  * à mesure le code qui est désassemblé.
  */
-void desa(instr_s *instr) {
+void desa(instr_s *instr_sa) {
   size_t i;
   uint64_t ins_cur;
   char *line; 
 
   line = (char*) xmalloc(sizeof(char) * 255); 
 
-  for (i = 0; i < instr->nb; ++i) {
+  for (i = 0; i < instr_sa->nb; ++i) {
     /*  Recuperation de l'instruction courante  */
-    ins_cur = instr->ins[i];
+    ins_cur = instr_sa->ins[i];
 
     /*  Affichage de l'instruction desassemblee */
     line = desa_line(line, ins_cur);
@@ -231,7 +231,7 @@ void desa(instr_s *instr) {
  * paramètre et retourne la chaine de caratère correspondante
  *
  * \param line un pointeur sur l'espace qui va contenir la chaine de caractères
- * \param instr la structure de donnée correspondant au contexte courant
+ * \param ins_cur l'instruction courante à désassembler
  * \return la chaine de caractères correspondante à l'instruction
  */
 char* desa_line(char *line, uint64_t ins_cur) {
