@@ -7,14 +7,12 @@
 #include <stdarg.h>
 #include "gui.h"
 
-void cleanup_gui_shadow(int out)
-{
+void cleanup_gui_shadow(int out) {
   endwin();
   exit(out);
 }
 
-void init_gui(void)
-{
+void init_gui(void) {
   signal(SIGINT, cleanup_gui_shadow);
 
   srand(getpid());
@@ -24,7 +22,7 @@ void init_gui(void)
   cbreak();
   keypad(stdscr, TRUE);
   noecho();
-  nodelay(stdscr,TRUE); // Lecture non bloquante d'une touche au clavier
+  nodelay(stdscr,TRUE); /*  Lecture non bloquante d'une touche au clavier  */
   
   if (!has_colors()) {
     fprintf(stderr,"Terminal incapable d'afficher des couleurs\n");
@@ -41,52 +39,45 @@ void init_gui(void)
   init_pair(7,COLOR_WHITE,COLOR_WHITE);
 }
 
-void cleanup_gui(void)
-{
+void cleanup_gui(void) {
   endwin();
 }
 
 
-void get_term_size(int *largeur, int *hauteur)
-{
+void get_term_size(int *largeur, int *hauteur) {
   getmaxyx(stdscr,*hauteur,*largeur);
 }
 
-int get_term_height(void)
-{
+int get_term_height(void) {
   int largeur, hauteur;
   getmaxyx(stdscr,hauteur,largeur);
   return hauteur;
 }
 
-int get_term_width(void)
-{
+int get_term_width(void) {
   int hauteur, largeur;
   getmaxyx(stdscr,hauteur,largeur);
   return largeur;
 }
 
-void get_window_size(window *w, int *largeur, int *hauteur)
-{
+void get_window_size(window *w, int *largeur, int *hauteur) {
   getmaxyx(w,*hauteur,*largeur);
 }
 
-int get_window_height(window *w)
-{
+int get_window_height(window *w) {
   int largeur, hauteur;
   getmaxyx(w,hauteur,largeur);
   return hauteur;
 }
 
-int get_window_width(window *w)
-{
+int get_window_width(window *w) {
   int hauteur, largeur;
   getmaxyx(w,hauteur,largeur);
   return largeur;
 }
 
-window *create_window(int largeur, int hauteur, int posX, int posY, bool cadre)
-{
+window *create_window(int largeur, int hauteur, int posX,
+		      int posY, bool cadre) {
   window *w = newwin(hauteur,largeur,posY,posX);
   if (cadre) {
     box(w,0,0);
@@ -95,25 +86,22 @@ window *create_window(int largeur, int hauteur, int posX, int posY, bool cadre)
   return w;
 }
 
-void delete_window(window *w)
-{
+void delete_window(window *w) {
   delwin(w);
 }
 
-void redraw_window(window *w)
-{
+void redraw_window(window *w) {
   wrefresh(w);
 }
 
-void putcharXY(window *w, int posX, int posY, char c, int col)
-{
+void putcharXY(window *w, int posX, int posY, char c, int col) {
   wattron(w,COLOR_PAIR(col));
   mvwaddch(w,posY,posX,c);
   wattroff(w,COLOR_PAIR(col));
 }
 
-int printfXY(window *w, int posX, int posY, int col, const char *patron, ...)
-{
+int printfXY(window *w, int posX, int posY, int col,
+	     const char *patron, ...) {
   va_list ap;
   int res;
   
@@ -128,8 +116,7 @@ int printfXY(window *w, int posX, int posY, int col, const char *patron, ...)
   return res;
 }
 
-char pollchar(window *w)
-{
+char pollchar(window *w) {
   nodelay(w,TRUE);
   return wgetch(w);
 }
