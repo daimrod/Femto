@@ -70,6 +70,9 @@ void fgui_emula(instr_s *instr_sa,
     fgui_print_prog(instr_sa, w_prog);
     redraw_window(w_prog);
 
+    fgui_print_reg(reg, w_reg);
+    redraw_window(w_reg);
+
     getchar();
 
     /*  Decomposition de l'instruction  */
@@ -93,8 +96,20 @@ void fgui_emula(instr_s *instr_sa,
       INC_IP(instr_sa);
   }
 
+  getchar();
   free(fp_instr_a);
   fp_instr_a = NULL;
+}
+
+void fgui_print_reg(float *reg, window *w_reg) {
+  size_t i;
+
+  for (i = 0; i < 16; ++i)
+    clear_line_from_to(w_reg, 2, get_window_width(w_reg)-2, 2+i, 0);
+  for (i = 0; i < 16; ++i) {
+    printfXY(w_reg, 2, 2+i, 0, "r%d: %f", i, reg[i]);
+  }
+
 }
 
 void fgui_print_prog(instr_s *instr_sa, window *w_prog) {
@@ -114,7 +129,7 @@ void fgui_print_prog(instr_s *instr_sa, window *w_prog) {
   line = (char*) xmalloc(sizeof(char) * 255);
 
   for (i = 0; i < (end-start); ++i)
-    clear_line_from_to(w_prog, 2+i, 2, get_window_width(w_prog)-2, 0);
+    clear_line_from_to(w_prog, 2, get_window_width(w_prog)-2, 2+i, 0);
 
   for (i = 0; i < (end-start); ++i) {
     line = desa_line(line, instr_sa->ins[i+start]);

@@ -29,6 +29,7 @@ void	f_print_fgui(float *reg, uint8_t *ra,
 void	f_read_fgui(float *reg, uint8_t *ra,
 		    instr_s *instr_sa, int x, int y,
 		    window *w_in) {
+  clear_line_from_to(w_in, x, get_window_width(w_in)-2, y, 0);
   printfXY(w_in, x, y, 0, "Entrez un nombre: ");
   echo();
   wscanw(w_in, "%f", &(reg[ra[0]]));
