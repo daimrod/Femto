@@ -21,6 +21,7 @@ fp_instr*	f_init_fgui(void) {
 void	f_print_fgui(float *reg, uint8_t *ra,
 		     instr_s *instr_sa, int x, int y,
 		     window *w_out) {
+  clear_line_from_to(w_out, x, get_window_width(w_out)-2, y, 0);
   wattron(w_out, A_BOLD);
   printfXY(w_out, x, y, 0, "%f", reg[ra[0]]);
   wattroff(w_out, A_BOLD);
