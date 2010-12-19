@@ -2,12 +2,11 @@ CC=gcc
 CFLAGS=-Wall -Wshadow -pedantic -g
 LDFLAGS=-lm
 
-EXEC=femto
 SRC= $(wildcard *.c)
 HDR= $(wildcard *.h)
 OBJ= $(SRC:.c=.o)
 
-all: $(EXEC)
+all: femto fgui
 
 femto: main.o emula.o instr.o util.o
 	$(CC) -o $@ $^ $(LDFLAGS)
@@ -23,18 +22,11 @@ fgui_instr.o: fgui_instr.h
 %.o: %.c
 	$(CC) -o $@ -c $< $(CFLAGS)
 
-run: all
-	./$(EXEC)
-
 clean:
 	rm -f *.o *~
 
 mrproper: clean
-	rm $(EXEC)
-
-pack: main.c instr.c instr.h notes makefile
-	tar -cf femto.tar main.c instr.c instr.h notes makefile
-	gzip -c femto.tar > femto.tar.gz
+	rm femto fgui
 
 doc: $(SRC) $(HDR)
 	doxygen doxyfile
