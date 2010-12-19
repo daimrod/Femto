@@ -121,7 +121,7 @@ char pollchar(window *w) {
   return wgetch(w);
 }
 
-void clear_line_from_to(window *w, int line, int from, int to, int col) {
+void clear_line_from_to(window *w, int from, int to, int line, int col) {
   int i;
 
   for (i = from; i < to; ++i)
