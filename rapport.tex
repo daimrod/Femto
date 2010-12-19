@@ -302,4 +302,32 @@ nombres flottants pour les instructions \texttt{load}, \texttt{pow} et des entie
 Dans le cas où le fichier serait mal formé, on affiche juste le message "syntax error" sans plus
 d'explication.
 
+\subsection{Réalisation d'une interface graphique}
+
+\begin{quote}
+[Optionnel] Utiliser les fichiers GUI disponibles sur madoc pour ecrire une interface semi-graphique
+a l’émulateur permettant d’afficher simultanéement le contenu de la mémoire et des registres lors de
+l’exécution du programme pas-à-pas.
+\end{quote}
+
+Pour réaliser une pseudo-interface graphique, nous utilisons les quelques fonctions fournies qui fournissent
+une petite API à la bibliothèques \textbf{NCurses}.
+
+L'interface est assez sommaire par manque de temps.
+
+Le programme est exécuté en mode pas-à-pas et le contenu des registres est affiché après chaque
+instruction dans un cadre à part.
+
+On passe à l'instruction suivante en appuyant sur n'importe quel touche, lorsqu'une saise est
+requise un message apparait dans un cadre et l'on attend que l'utilisateur entre un nombre (pas de
+gestion d'erreurs).
+
+Lors d'un affichage, le résutat apparait dans le cadre approprié.
+
+Voici un apperçu de l'interface:
+
+
+\includegraphics[scale = 0.3]{./fgui.eps}
+
+
 \end{document}
