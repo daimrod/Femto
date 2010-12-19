@@ -85,7 +85,7 @@ void fgui_emula(instr_s *instr_sa,
 	f_print_fgui(reg, ra, instr_sa, 1, 1, w_out);
 	break;
       case 8:
-	f_read_fgui(reg, ra, instr_sa, 2, 2, w_in);
+	f_read_fgui(reg, ra, instr_sa, 1, 1, w_in);
 	break;
       default:
 	fp_instr_a[op](reg, ra, instr_sa);
@@ -133,10 +133,13 @@ void fgui_print_prog(instr_s *instr_sa, window *w_prog) {
 
   for (i = 0; i < (end-start); ++i) {
     line = desa_line(line, instr_sa->ins[i+start]);
-    if (i+start == instr_sa->ip)
+    if (i+start == instr_sa->ip) {
+      wattron(w_prog, A_BOLD);
       printfXY(w_prog, 2, i+2, 0, "-> ");
-    else
+    } else {
+      wattroff(w_prog, A_BOLD);
       printfXY(w_prog, 2, i+2, 0, "++ ", i);
+    }
     printfXY(w_prog, 5, i+2, 0, line);
   }
 

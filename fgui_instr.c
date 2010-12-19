@@ -25,6 +25,7 @@ void	f_print_fgui(float *reg, uint8_t *ra,
   printfXY(w_out, x, y, 0, "%f", reg[ra[0]]);
   wattroff(w_out, A_BOLD);
   redraw_window(w_out);
+  redraw_window(w_out);
 
   INC_IP(instr_sa);
 }
@@ -35,10 +36,12 @@ void	f_read_fgui(float *reg, uint8_t *ra,
   clear_line_from_to(w_in, x, get_window_width(w_in)-2, y, 0);
   wattron(w_in, A_BOLD);
   printfXY(w_in, x, y, 0, "Entrez un nombre: ");
+  wattroff(w_in, A_BOLD);
+  redraw_window(w_in);
   echo();
   wscanw(w_in, "%f", &(reg[ra[0]]));
+  printfXY(w_in, x, y, 0, "Entrez un nombre: ");
   noecho();
-  wattroff(w_in, A_BOLD);
   redraw_window(w_in);
 
   INC_IP(instr_sa);
