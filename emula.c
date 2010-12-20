@@ -241,7 +241,7 @@ void desa(instr_s *instr_sa) {
 }
 
 /**
- * \fn char* desa_line(uint64_t ins_cur)
+ * \fn char* desa_line(char *line, uint64_t ins_cur)
  * \brief Désassemble le code de l'instruction envoyée en
  * paramètre et retourne la chaine de caratère correspondante
  *
@@ -265,8 +265,11 @@ char* desa_line(char *line, uint64_t ins_cur) {
   /*  Decomposition de l'instruction  */
   split(ins_cur, &op, &suf, ra);
 
+  /* Representation de l'instruction */
   snprintf(mem, sizeof(char) * 255, "%s%s", ins_a[op], suf_a[suf]);
   line = strcpy(line, mem);
+
+  /* Representation des registres utilises */
   snprintf(mem, sizeof(char) * 255, ra_a[op], ra[0], ra[1], ra[2]);
   line = strcat(line, mem);
 
