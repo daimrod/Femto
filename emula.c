@@ -1,7 +1,7 @@
 /**
  * \file emula.c
- * \brief Ce fichier contient les principales fonctions permettant
- * l'émulation d'un processeur Femto
+ * \brief Ce fichier contient les fonctions principales permettant
+ * l'exécution et le désassemblage.
  */
 
 #include "emula.h"
