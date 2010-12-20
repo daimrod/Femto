@@ -1,4 +1,16 @@
+/**
+ * \file emula.c
+ * \brief Ce fichier contient les principales fonctions permettant
+ * l'émulation d'un processeur Femto
+ */
+
 #include "emula.h"
+
+#include "instr.h"
+#include "util.h"
+
+#include <stdio.h>
+#include <string.h>
 
 /**
  * \fn void	split(uint64_t instr, uint8_t *op, uint8_t *suf, uint8_t *ra)
@@ -9,7 +21,10 @@
  * \param suf le suffixe lié à l'opération
  * \param ra un tableau indiquant les registres à utiliser durant l'opération
  *
- * Décompose la partie de l'instruction pour en permettre l'interprétation
+ * Décompose la partie basse de l'instruction pour en permettre l'interprétation
+ * par la machine Femto.
+ * Cette fonction extrait la fonction à exécuter, le suffixe associé et le ou les
+ * registres manipulés
  */
 void	split(uint64_t instr, uint8_t *op, uint8_t *suf, uint8_t *ra) {
   *op	= (instr & 0xFF000000) >> 24;

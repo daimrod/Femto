@@ -1,7 +1,6 @@
 #ifndef _UTIL_H_
 #define _UTIL_H_
 
-#include <stdio.h>
 #include <stdlib.h>
 
 #define MIN(x, y) ((x) < (y) ? (x) : (y))

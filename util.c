@@ -1,5 +1,8 @@
 #include "util.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+
 void* xmalloc(size_t size) {
   void* ret = NULL;
 

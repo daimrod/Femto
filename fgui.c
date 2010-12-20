@@ -1,104 +1,57 @@
+#include "fgui.h"
+
 #include "gui.h"
 #include "emula.h"
-#include "instr.h"
 #include "util.h"
-#include "fgui_instr.h"
+#include "instr.h"
 
 #include <ncurses.h>
-#include <stdio.h>
 
-void fgui_print_reg(float *reg, window *w_reg);
+fp_instr*	f_init_fgui(void) {
+  fp_instr *fp_instr_a;
 
-void fgui_emula(instr_s *instr_sa,
-		window *w_prog,
-		window *w_reg,
-		window *w_out,
-		window *w_in);
-
-void fgui_print_prog(instr_s *instr_sa, window *w_prog);
-
-void fgui_init(window **w_prog,
-	       window **w_reg,
-	       window **w_out,
-	       window **w_in);
-
-void fgui_end(window **w_prog,
-	      window **w_reg,
-	      window **w_out,
-	      window **w_in);
-
-int main(int argc, char **argv) {
-  window *w_prog, *w_reg, *w_out, *w_in;
-  instr_s *instr_sa;
-
-  if (argc != 2) {
-    printf("usage: ./fgui nom_fichier\n");
-  } else {
-    instr_sa = read_file(argv[1]);
-
-    fgui_init(&w_prog, &w_reg, &w_out, &w_in);
-    
-    fgui_emula(instr_sa, w_prog, w_reg, w_out, w_in);
-
-    fgui_end(&w_prog, &w_reg, &w_out, &w_in);
-    FREE_INS(instr_sa);
-  }
-
-  return 0;
+  fp_instr_a = (fp_instr*) xmalloc(sizeof(fp_instr_a) * 11);
+  fp_instr_a[0] = &f_add;
+  fp_instr_a[1] = &f_b;
+  fp_instr_a[2] = &f_cmp;
+  fp_instr_a[3] = &f_load;
+  fp_instr_a[4] = &f_move;
+  fp_instr_a[5] = &f_mul;
+  fp_instr_a[6] = &f_pow;
+  fp_instr_a[7] = NULL;
+  fp_instr_a[8] = NULL;
+  fp_instr_a[9] = &f_stop;
+  fp_instr_a[10] = &f_sub;
+  return fp_instr_a;
 }
 
-void fgui_emula(instr_s *instr_sa,
-		window *w_prog,
-		window *w_reg,
-		window *w_out,
-		window *w_in) {
-  fp_instr *fp_instr_a;
-  uint64_t ins_cur;
-  uint8_t op, suf, ra[3];
-  float reg[16];
-  size_t i;
+void	f_print_fgui(float *reg, uint8_t *ra,
+		     instr_s *instr_sa, int x, int y, window *w_out) {
+  clear_line_from_to(w_out, x, get_window_width(w_out)-2, y, 0);
+  wattron(w_out, A_BOLD);
+  printfXY(w_out, x, y, 0, "%f", reg[ra[0]]);
+  wattroff(w_out, A_BOLD);
+  redraw_window(w_out);
+  redraw_window(w_out);
 
-  fp_instr_a = f_init_fgui();
-  for (i = 0; i < 16; ++i)
-    reg[i] = 0;
+  INC_IP(instr_sa);
+}
 
-  while (instr_sa->ip < instr_sa->nb) {
-    /*  Recuperation de l'instruction courante  */
-    ins_cur = instr_sa->ins[instr_sa->ip];
+void	f_read_fgui(float *reg, uint8_t *ra,
+		    instr_s *instr_sa, int x, int y,
+		    window *w_in) {
+  clear_line_from_to(w_in, x, get_window_width(w_in)-2, y, 0);
+  wattron(w_in, A_BOLD);
+  printfXY(w_in, x, y, 0, "Entrez un nombre: ");
+  wattroff(w_in, A_BOLD);
+  redraw_window(w_in);
+  echo();
+  wscanw(w_in, "%f", &(reg[ra[0]]));
+  printfXY(w_in, x, y, 0, "Entrez un nombre: ");
+  noecho();
+  redraw_window(w_in);
 
-    /*  Affichage de l'instruction desassemblee */
-    fgui_print_prog(instr_sa, w_prog);
-    redraw_window(w_prog);
-
-    fgui_print_reg(reg, w_reg);
-    redraw_window(w_reg);
-
-    getchar();
-
-    /*  Decomposition de l'instruction  */
-    split(ins_cur, &op, &suf, ra);
-
-    /*  On execute l'instruction demandee si necessaire  */
-    if ((suf & instr_sa->flags) | !suf) {
-      switch (op) {
-      case 7:
-	f_print_fgui(reg, ra, instr_sa, 1, 1, w_out);
-	break;
-      case 8:
-	f_read_fgui(reg, ra, instr_sa, 1, 1, w_in);
-	break;
-      default:
-	fp_instr_a[op](reg, ra, instr_sa);
-	break;
-      }
-    /* sinon on passe a l'instruction suivante */
-    } else
-      INC_IP(instr_sa);
-  }
-
-  getchar();
-  free(fp_instr_a);
-  fp_instr_a = NULL;
+  INC_IP(instr_sa);
 }
 
 void fgui_print_reg(float *reg, window *w_reg) {
@@ -177,4 +130,60 @@ void fgui_end(window **w_prog,
   delete_window(*w_out);
   delete_window(*w_in);
   cleanup_gui();
+}
+
+void fgui_emula(instr_s *instr_sa) {
+  window *w_prog, *w_reg, *w_out, *w_in;
+  fp_instr *fp_instr_a;
+  uint64_t ins_cur;
+  uint8_t op, suf, ra[3];
+  float reg[16];
+  size_t i;
+
+  fgui_init(&w_prog, &w_reg, &w_out, &w_in);
+
+  fp_instr_a = f_init_fgui();
+  for (i = 0; i < 16; ++i)
+    reg[i] = 0;
+
+  while (instr_sa->ip < instr_sa->nb) {
+    /*  Recuperation de l'instruction courante  */
+    ins_cur = instr_sa->ins[instr_sa->ip];
+
+    /*  Affichage de l'instruction desassemblee */
+    fgui_print_prog(instr_sa, w_prog);
+    redraw_window(w_prog);
+
+    fgui_print_reg(reg, w_reg);
+    redraw_window(w_reg);
+
+    getchar();
+
+    /*  Decomposition de l'instruction  */
+    split(ins_cur, &op, &suf, ra);
+
+    /*  On execute l'instruction demandee si necessaire  */
+    if ((suf & instr_sa->flags) | !suf) {
+      switch (op) {
+      case 7:
+	f_print_fgui(reg, ra, instr_sa, 1, 1, w_out);
+	break;
+      case 8:
+	f_read_fgui(reg, ra, instr_sa, 1, 1, w_in);
+	break;
+      default:
+	fp_instr_a[op](reg, ra, instr_sa);
+	break;
+      }
+    /* sinon on passe a l'instruction suivante */
+    } else
+      INC_IP(instr_sa);
+  }
+
+  getchar();
+
+  free(fp_instr_a);
+  fp_instr_a = NULL;
+
+  fgui_end(&w_prog, &w_reg, &w_out, &w_in);
 }

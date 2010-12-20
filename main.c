@@ -10,6 +10,8 @@
 #include <string.h>
 
 #include "emula.h"
+#include "fgui.h"
+#include "util.h"
 
 /**
  * \fn int main(int argc, char *argv[])
@@ -26,26 +28,29 @@
  * respecter est affiché puis le programme se termine.
  */
 int main(int argc, char *argv[]) {
-  instr_s *instr;
+  instr_s *instr_sa;
 
   switch (argc) {
   case 3:
-    instr = read_file(argv[2]);
+    instr_sa = read_file(argv[2]);
 
     if (!strncmp(argv[1], "-d", 2))
-      desa(instr);
+      desa(instr_sa);
     else if (!strncmp(argv[1], "-e", 2))
-      emula(instr);
+      emula(instr_sa);
     else if (!strncmp(argv[1], "-s", 2))
-      emula_sbs(instr);
+      emula_sbs(instr_sa);
+    else if (!strncmp(argv[1], "-g", 2))
+      fgui_emula(instr_sa);
 
-    FREE_INS(instr);
+    FREE_INS(instr_sa);
     break;
   default:
     printf("usage: ./femto (-d | -e | -s) nom_fichier\n");
     printf("\t-d desassemble le code\n");
     printf("\t-e execute le code\n");
     printf("\t-s execute le code en mode pas a pas\n");
+    printf("\t-g lance l'interface ncurses\n");
   }
 
   return 0;

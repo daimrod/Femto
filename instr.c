@@ -1,5 +1,14 @@
 #include "instr.h"
 
+#include "util.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#include <stdint.h>
+#include <math.h>
+
+
 void mod_ip(instr_s *instr_sa, int32_t offset) {
   int32_t new_ip;
 

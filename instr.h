@@ -4,13 +4,7 @@
 #ifndef _INSTR_H_
 #define _INSTR_H_
 
-#include "util.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-
 #include <stdint.h>
-#include <math.h>
 
 /**
  * \df INC_IP(instr) mod_ip(instr, 1)
@@ -45,7 +39,6 @@ typedef struct {
 typedef void (*fp_instr)(float*, uint8_t*, instr_s*);
 
 fp_instr*	f_init(void);
-fp_instr*	f_init_fgui(void);
 void mod_ip(instr_s *instr_sa, int32_t offset);
 
 void	f_add	(float *reg, uint8_t *ra, instr_s *instr_sa);
