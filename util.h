@@ -9,7 +9,7 @@
   free(instr->ins);				\
   instr->ins = NULL;				\
   free(instr);					\
-  instr = NULL 
+  instr = NULL
 
 void* xmalloc(size_t size);
 
